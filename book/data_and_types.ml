@@ -187,7 +187,7 @@ let rec max_hp = function
       | Some poke2 -> if poke1.hp >= poke2.hp then Some poke1 else Some poke2
     end
 
-let rec max_hp' lst =
+let max_hp' lst =
   let rec helper acc = function
     | [] -> acc
     | poke1 :: t -> begin
