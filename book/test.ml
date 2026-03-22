@@ -71,7 +71,22 @@ let uni_tests =
          make_uni_test "Down up" false [ 1; 2; 1; 2 ];
        ]
 
+let list_max_tests =
+  ""
+  >::: [
+         ( "empty" >:: fun _ ->
+           assert_raises (Failure "empty") (fun () -> list_max []) );
+         ("nonempty" >:: fun _ -> assert_equal 8 (list_max [ 3; 1; 4; 8 ]));
+       ]
+
 let _ =
   run_test_tt_main
     ("Final Suite"
-    >::: [ prod_tests; rev_tests; take_tests; drop_tests; uni_tests ])
+    >::: [
+           prod_tests;
+           rev_tests;
+           take_tests;
+           drop_tests;
+           uni_tests;
+           list_max_tests;
+         ])
