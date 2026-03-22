@@ -209,3 +209,156 @@ let is_before (date1 : date_like) (date2 : date_like) : bool =
   let y1, m1, d1 = date1 in
   let y2, m2, d2 = date2 in
   y1 < y2 || (y1 = y2 && m1 < m2) || (y1 = y2 && m1 = m2 && d1 < d2)
+
+(* Write a function earliest : (int*int*int) list -> (int * int * int) option. *)
+(* It evaluates to None if the input list is empty,  *)
+(* and to Some d if date d is the earliest date in the list.  *)
+let rec earliest (lst : date_like list) : date_like option =
+  match lst with
+  | [] -> None
+  | d1 :: t -> begin
+      match earliest t with
+      | None -> Some d1
+      | Some d2 -> if is_before d1 d2 then Some d1 else Some d2
+    end
+
+let earliest' (lst : date_like list) : date_like option =
+  let rec helper acc lst =
+    match lst with
+    | [] -> acc
+    | d1 :: t -> (
+        match acc with
+        | None -> helper (Some d1) t
+        | Some d2 ->
+            if is_before d1 d2 then helper (Some d1) t else helper (Some d2) t)
+  in
+  helper None lst
+
+(* Use the functions insert and lookup to construct an association list that maps the 
+integer 1 to the string “one”, 2 to “two”, and 3 to “three”. Lookup the key 2. Lookup the key 4. *)
+let insert k v d = (k, v) :: d
+
+let rec lookup k = function
+  | [] -> None
+  | (k', v) :: t -> if k = k' then Some v else lookup k t
+
+let assoc_lst = insert 3 "three" (insert 2 "two" (insert 1 "one" []))
+let some_2 = lookup 2 assoc_lst
+let none_4 = lookup 4 assoc_lst
+
+(* Define a variant type suit that represents the four suits ♣ ♦ ♥ ♠, in a standard deck.  *)
+type suit = Clubs | Diamonds | Hearts | Spades
+
+(* Define a type rank that represents the possible ranks of a card:  *)
+type rank = Num of int | Jack | Queen | King | Ace
+
+(* Define a type card that represents the suit and rank of a single card *)
+(* Make it a record with two fields *)
+type card = { suit : suit; rank : rank }
+
+(* Define a few values of type card:  *)
+(* the Ace of Clubs, the Queen of Hearts, the Two of Diamonds, the Seven of Spades. *)
+let ace_of_clubs = { suit = Clubs; rank = Ace }
+let queen_of_hearts = { suit = Hearts; rank = Queen }
+let two_of_diamonds = { suit = Diamonds; rank = Num 2 }
+let two_of_spades = { suit = Spades; rank = Num 7 }
+
+(* For each pattern in the list below, give a value of type int option list  *)
+(* that does not match the pattern and is not the empty list, or explain why that’s impossible. *)
+(* Some x :: tl *)
+let lst1 : int option list = [ None; Some 4 ]
+
+(* [Some 3110; None] *)
+let lst2 : int option list = [ Some 45; None ]
+
+(* [Some x; _] *)
+let lst3 : int option list = [ None; None ]
+
+(* h1 :: h2 :: tl *)
+let lst4 : int option list = [ Some 1 ]
+
+(* h :: tl *)
+(* Impossible because it matches every non empty list. *)
+(* Can only be NOT matched with an empty list *)
+
+(* Complete the quadrant function , which should return the quadrant of the given x, y point *)
+(* Points that lie on an axis do not belong to any quadrant.  *)
+(* Hints: (a) define a helper function for the sign of an integer, (b) match against a pair. *)
+type quad = I | II | III | IV
+type sign = Neg | Zero | Pos
+
+let sign (x : int) : sign = if x > 0 then Pos else if x < 0 then Neg else Zero
+
+let quadrant ((x, y) : int * int) : quad option =
+  match (sign x, sign y) with
+  | Pos, Pos -> Some I
+  | Neg, Pos -> Some II
+  | Neg, Neg -> Some III
+  | Pos, Neg -> Some IV
+  | Zero, _ | _, Zero -> None
+
+(* Rewrite the quadrant function to use the when syntax *)
+let quadrant' = function
+  | x, y when x > 0 && y > 0 -> Some I
+  | x, y when x < 0 && y > 0 -> Some II
+  | x, y when x < 0 && y < 0 -> Some III
+  | x, y when x > 0 && y < 0 -> Some IV
+  | _ -> None
+
+(* Write a function depth : 'a tree -> int that returns the number of nodes in the *)
+(* longest path from the root to a leaf.  *)
+(* For example, the depth of an empty tree (simply Leaf) is 0, *)
+(* and the depth of tree t above is 3.  *)
+type 'a tree = Leaf | Node of int * 'a tree * 'a tree
+
+let rec depth (t : 'a tree) : int =
+  match t with Leaf -> 0 | Node (_, l, r) -> 1 + max (depth l) (depth r)
+
+(* Write a function same_shape : 'a tree -> 'b tree -> bool that determines  *)
+(* whether two trees have the same shape, regardless of whether the values they carry  *)
+let rec same_shape (t1 : 'a tree) (t2 : 'a tree) : bool =
+  match (t1, t2) with
+  | Leaf, Leaf -> true
+  | Node (_, l1, r1), Node (_, l2, r2) -> same_shape l1 l2 && same_shape r1 r2
+  | _, _ -> false
+
+(* Write a function list_max : int list -> int that returns the maximum integer in a list,  *)
+(* or raises Failure "empty" if the list is empty. *)
+let rec list_max (lst : int list) : int =
+  match lst with
+  | [] -> failwith "empty"
+  | [ x ] -> x
+  | h :: t -> max h (list_max t)
+
+(* Write a function list_max_string : int list -> string that returns a string  *)
+(* containing the maximum integer in a list, or the string "empty" if the list is empty.  *)
+let list_max_string (lst : int list) : string =
+  try string_of_int (list_max lst) with Failure _ -> "empty"
+
+(* Write two OUnit tests to determine whether your solution to list_max  *)
+(*  correctly raises an exception when its input is the empty list  *)
+(* tests added to test.ml *)
+
+(* Modify your definition of quadrant to use polymorphic variants.  *)
+(* The types of your functions should become these *)
+let poly_sign (x : int) = if x > 0 then `Pos else if x < 0 then `Neg else `Zero
+
+let poly_quadrant (x, y) =
+  match (poly_sign x, poly_sign y) with
+  | `Pos, `Pos -> Some `I
+  | `Neg, `Pos -> Some `II
+  | `Neg, `Neg -> Some `III
+  | `Pos, `Neg -> Some `IV
+  | `Zero, _ | _, `Zero -> None
+
+(* Write a function is_bst : ('a * 'b) tree -> bool that returns true *)
+(* if and the given tree satisfies the binary search tree invariant *)
+(* An efficient version of this function that visits each node at most once is tricky to write *)
+
+(* Hint: Write a recursive helper function that takes a tree and either gives you *)
+(* (i) the minimum and maximum value in the tree, *)
+(* or (ii) tells you that the tree is empty,  *)
+(* or (iii) tells you that the tree does not satisfy the invariant.  *)
+(* Your is_bst function will not be recursive, but will call your helper function  *)
+(* and pattern match on the result. *)
+(* You will need to define a new variant type for the return type of your helper function. *)
