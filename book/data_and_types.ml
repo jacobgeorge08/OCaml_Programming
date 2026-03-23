@@ -1,5 +1,5 @@
 (* Construct a list that has the integers 1 through 5 in it *)
-let lst1 = [ 1; 2; 3; 4; 5 ]
+let _ = [ 1; 2; 3; 4; 5 ]
 
 (* Construct the same list, but use :: notation *)
 (* let lst2 = 1 :: 2 :: 3 :: 4 :: 5 :: [] *)
@@ -7,7 +7,7 @@ let lst1 = [ 1; 2; 3; 4; 5 ]
 
 (* Now the following expression must appear in your answer: [2; 3; 4] *)
 (* Use the @ operator, and do not use :: *)
-let lst3 = [ 1 ] @ [ 2; 3; 4 ] @ [ 5 ]
+let _ = [ 1 ] @ [ 2; 3; 4 ] @ [ 5 ]
 
 (* Write a function product that returns the product of all the elements in a list *)
 (* The product of all the elements of an empty list is 1 *)
@@ -375,7 +375,7 @@ let poly_quadrant (x, y) =
 (* and pattern match on the result *)
 (* You will need to define a new variant type for the return type of your helper function *)
 
-type ('a, 'b) tree = Leaf | Node of ('a * 'b) * ('a, 'b) tree * ('a, 'b) tree
+type ('a, 'b) bst_tree = Leaf | Node of ('a * 'b) * ('a, 'b) bst_tree * ('a, 'b) bst_tree
 type 'a bst_helper = Empty | Invalid | Min_Max of ('a * 'a)
 
 let rec check t =
