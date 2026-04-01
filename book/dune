@@ -1,4 +1,4 @@
 (executable
  (name test)
- (modules data_and_types test)
+ (modules data_and_types higher_order test)
  (libraries ounit2))
