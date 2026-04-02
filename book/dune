@@ -1,4 +1,9 @@
+(library
+ (name cs3110)
+ (wrapped false)
+ (modules basics data_and_types higher_order modular_programming))
+
 (executable
  (name test)
- (modules data_and_types higher_order test)
- (libraries ounit2))
+ (modules test)
+ (libraries cs3110 ounit2))
